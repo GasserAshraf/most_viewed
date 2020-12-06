@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:most_viewed/Widgets/Card%20Widget.dart';
+import 'package:most_viewed/models/news_model.dart';
+import 'package:most_viewed/services/articale_service.dart';
 
 class MainScreen extends StatefulWidget {
   @override
@@ -9,6 +11,7 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
+    final _newsService = NewsService();
     double width = MediaQuery
         .of(context)
         .size
@@ -33,10 +36,23 @@ class _MainScreenState extends State<MainScreen> {
             )
           ],
         ),
-        body: ListView.builder(itemCount: 3,itemBuilder: (context,index){
-          return CardWidget(context);
-        })
-    );
+        body: FutureBuilder<List<NewsModel>>(
+          future: _newsService.getNewsList(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return ListView.builder(itemCount: snapshot.data.length,
+                  itemBuilder: (context, index) =>
+                      CardWidget(
+                        context,
+                        snapshot.data[index].title,
+                        snapshot.data[index].byline,
+                        snapshot.data[index].url,
+                        snapshot.data[index].publishedDate,
+                      ));
+            }else{
+              return Container(child: Center(child: Text("Loading.....")));
+            }
+          },
+        ));
   }
-
 }
