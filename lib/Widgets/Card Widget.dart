@@ -49,7 +49,7 @@ Widget CardWidget(
                               textAlign: TextAlign.left,
                               overflow: TextOverflow.ellipsis,
                               maxLines: 2,
-                              style: TextStyle(fontSize: 15, color: Colors.grey),
+                              style: TextStyle(fontSize: 13, color: Colors.grey),
                             ),
                           ),
                         ],

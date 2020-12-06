@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:most_viewed/Widgets/Card%20Widget.dart';
 import 'package:most_viewed/models/news_model.dart';
-import 'package:most_viewed/services/articale_service.dart';
+import 'package:most_viewed/view_models/news_view_model.dart';
 
 class MainScreen extends StatefulWidget {
   @override
@@ -11,15 +12,9 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
-    final _newsService = NewsService();
-    double width = MediaQuery
-        .of(context)
-        .size
-        .width;
-    double height = MediaQuery
-        .of(context)
-        .size
-        .height;
+    final _news = NewsViewModels();
+    double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height;
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.cyan,
@@ -37,20 +32,22 @@ class _MainScreenState extends State<MainScreen> {
           ],
         ),
         body: FutureBuilder<List<NewsModel>>(
-          future: _newsService.getNewsList(),
+          future: _news.fetchData(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              return ListView.builder(itemCount: snapshot.data.length,
-                  itemBuilder: (context, index) =>
-                      CardWidget(
+              return ListView.builder(
+                  itemCount: snapshot.data.length,
+                  itemBuilder: (context, index) => CardWidget(
                         context,
                         snapshot.data[index].title,
                         snapshot.data[index].byline,
                         snapshot.data[index].url,
                         snapshot.data[index].publishedDate,
                       ));
-            }else{
-              return Container(child: Center(child: Text("Loading.....")));
+            } else {
+              return ModalProgressHUD(
+                inAsyncCall: true,
+                  child: Container(child: Center(child: Text("Loading....."))));
             }
           },
         ));
